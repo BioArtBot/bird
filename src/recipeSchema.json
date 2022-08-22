@@ -1,0 +1,189 @@
+{
+    "title": "Recipe",
+    "description": "A bioreactor recipe",
+    "type": "object",
+    "properties": {
+        "recipe_id": {
+            "description": "unique global id for recipe",
+            "type": "string"
+        },
+        "name": {
+            "description": "Human-readable name for recipe",
+            "type": "string"
+        },
+        "author": {
+            "description": "Author of recipe",
+            "type": "string"
+        },
+        "comments": {
+            "description": "Any additional comments to accompany recipe",
+            "type": "string"
+        },
+        "states": {
+            "description": "Array of states bioreactor may be in during recipe",
+            "type": "array",
+            "items": { "$ref": "#/$defs/recipeState" }
+        }
+    },
+    "$defs": {
+        "recipeState": {
+            "description": "State of all bioreactor parameters during part of a recipe",
+            "type": "object",
+            "properties":{
+                "state_id": {
+                    "description": "unique ID for state within recipe scope",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable name for state",
+                    "type": "string"
+                },
+                "STIRR": {
+                    "description": "Stir rate for bioreactor",
+                    "$ref": "#/$defs/processValue"
+                },
+                "FEEDR": {
+                    "description": "Feedrate for bioreactor",
+                    "$ref": "#/$defs/processValue"
+                },
+                "TEMP": {
+                    "description": "Temperature for bioreactor",
+                    "$ref": "#/$defs/processValue"
+                },
+                "PH": {
+                    "description": "pH for bioreactor",
+                    "$ref": "#/$defs/processValue"
+                },
+                "DO": {
+                    "description": "Dissolved oxygen for bioreactor",
+                    "$ref": "#/$defs/processValue"
+                },
+                "exitTriggerArray": {
+                    "description": "List of all intended exit triggers for this state",
+                    "type": "array",
+                    "items": { "$ref": "#/$defs/exitTrigger"}
+                }
+            },
+            "required": ["state_id", "STIRR", "FEEDR", "TEMP", "PH", "DO", "exitTriggerArray"]
+        },
+        "processValue": {
+            "title": "Process Value",
+            "description": "A measured, controllable variable in a process",
+            "type": "object",
+            "required": ["units"],
+            "properties":{
+                "units" : {
+                    "description": "real engineering units for the process variable",
+                    "type" : "string"
+                }
+            },
+            "$ref": "#/$defs/controlParameters"
+        },
+        "exitTrigger": {
+            "description": "Trigger to move to the next state",
+            "type": "object",
+            "properties": {
+                "variable": {
+                    "description" : "Process variable that will trigger the state exit",
+                    "$ref": "#/$defs/availableMeasurements"
+                },
+                "test" : {
+                    "description": "Test to compare process variable to threshold",
+                    "enum": [">", "<"]
+                },
+                "threshold" : {
+                    "description": "Threshold that if process variable reaches a state exit is triggered",
+                    "type" : "number"
+                },
+                "exitTo" : {
+                    "description": "Next state that should be entered when exiting through this trigger",
+                    "enum" : []
+                }
+            },
+            "required": ["variable", "test", "threshold", "exitTo"]
+        },
+        "controlParameters":{
+            "properties": {
+                "controlStyle": {
+                    "description" : "Options for controlling a bioreactor process variable",
+                    "enum" : ["CONSTANT", "PID", "ON/OFF", "NONE"]
+                },
+                "controlParameters": {
+                    "description": "All parameters to control the PV in the selected style",
+                    "type": "object"
+                }
+            },
+            "required": ["controlStyle"],
+            "dependencies": {
+                "controlStyle": {
+                    "oneOf": [
+                        {
+                            "properties": {
+                                "controlStyle": {
+                                    "enum": [ "CONSTANT"]
+                                },
+                                "controlParameters": {
+                                    "properties": {"value": {"type": "number"} },
+                                    "required": ["value"]
+                                }
+                            },
+                            "required": ["controlParameters"]
+                        },
+                        {
+                            "properties": {
+                                "controlStyle": {
+                                    "enum": [ "PID"]
+                                },
+                                "controlParameters": {
+                                    "properties": {
+                                        "CV": {"$ref": "#/$defs/availableMeasurements"},
+                                        "SP": {"type": "number"}
+                                    },
+                                    "required": ["CV", "SP"]
+                                }
+                            },
+                            "required": ["controlParameters"]
+                        },
+                        {
+                            "properties": {
+                                "controlStyle": {
+                                    "enum": [ "ON/OFF"]
+                                },
+                                "controlParameters": {
+                                    "properties": {
+                                        "CV": {"$ref": "#/$defs/availableMeasurements"},
+                                        "ON_LIMIT": {"type": "number"},
+                                        "OFF_LIMIT": {"type": "number"}
+                                    },
+                                    "required":["CV","ON_LIMIT","OFF_LIMIT"]
+                                }
+                            },
+                            "required": ["controlParameters"]
+                        },
+                        {
+                            "properties": {
+                                "controlStyle": {
+                                    "enum": [ "NONE"]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "availableMeasurements": {
+            "enum": [
+                "STIRR",
+                "TEMP",
+                "XV_TEMP",
+                "FEEDR",
+                "BASER",
+                "PH",
+                "DO",
+                "MASS",
+                "RUNTIME",
+                "STATETIME"
+            ]
+        }
+    }
+}

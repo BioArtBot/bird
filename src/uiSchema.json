@@ -1,0 +1,14 @@
+{
+    "recipe_id":{
+        "ui:readonly": true,
+        "ui:description": "This is your recipe's ID"
+    },
+    "states":{
+        "items":{
+            "state_id":{
+                "ui:readonly": true,
+                "ui:description": "This is the state's ID"
+            }
+        }
+    }
+  }
