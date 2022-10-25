@@ -1,0 +1,208 @@
+{
+    "recipe_id": "$7a45c30d2e500e4ef66a0504d02ba20e",
+    "name": "Test Recipe For Bioreactor",
+    "author": "Tim Dobbs",
+    "comments": "This is a demonstration recipe for JSON state",
+    "states": [
+        {
+            "state_id": "$59fb84a06ce64275",
+            "name": "Initial state",
+            "STIRR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 300
+                },
+                "unit": "rpm"
+            },
+            "FEEDR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 100
+                },
+                "unit": "g/m"
+            },
+            "TEMP": {
+                "ControlStyle": "ON/OFF",
+                "ControlParameters": {
+                    "CV": "XV_TEMP",
+                    "ON_LIMIT": 31,
+                    "OFF_LIMIT": 29
+                },
+                "unit": "C"
+            },
+            "PH": {
+                "ControlStyle": "PID",
+                "ControlParameters": {
+                    "CV": "BASER",
+                    "SP": 4
+                },
+                "unit": ""
+            },
+            "DO": {
+                "ControlStyle": "NONE",
+                "unit": "%"
+            },
+            "exitTriggerArray": [
+                {
+                    "variable": "STATETIME",
+                    "test": ">",
+                    "threshold": 60,
+                    "exitTo": "$f9b3d0f85bed5626"
+                }
+            ]
+        },
+        {
+            "state_id": "$f9b3d0f85bed5626",
+            "name": "Growth Phase Low Feed",
+            "STIRR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 300
+                },
+                "unit": "rpm"
+            },
+            "FEEDR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 1
+                },
+                "unit": "g/m"
+            },
+            "TEMP": {
+                "ControlStyle": "ON/OFF",
+                "ControlParameters": {
+                    "CV": "XV_TEMP",
+                    "ON_LIMIT": 31,
+                    "OFF_LIMIT": 29
+                },
+                "unit": "C"
+            },
+            "PH": {
+                "ControlStyle": "PID",
+                "ControlParameters": {
+                    "CV": "BASER",
+                    "SP": 4
+                },
+                "unit": ""
+            },
+            "DO": {
+                "ControlStyle": "NONE",
+                "unit": "%"
+            },
+            "exitTriggerArray": [
+                {
+                    "variable": "DO",
+                    "test": ">",
+                    "threshold": 40,
+                    "exitTo": "$b83606a669697ee1"
+                },
+                {
+                    "variable": "DO",
+                    "test": "<",
+                    "threshold": 1,
+                    "exitTo": "$cd5bb80e5ddf9ec7"
+                }
+            ]
+        },
+        {
+            "state_id": "$b83606a669697ee1",
+            "name": "Growth Phase High Feed",
+            "STIRR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 300
+                },
+                "unit": "rpm"
+            },
+            "FEEDR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 6
+                },
+                "unit": "g/m"
+            },
+            "TEMP": {
+                "ControlStyle": "ON/OFF",
+                "ControlParameters": {
+                    "CV": "XV_TEMP",
+                    "ON_LIMIT": 31,
+                    "OFF_LIMIT": 29
+                },
+                "unit": "C"
+            },
+            "PH": {
+                "ControlStyle": "PID",
+                "ControlParameters": {
+                    "CV": "BASER",
+                    "SP": 4
+                },
+                "unit": ""
+            },
+            "DO": {
+                "ControlStyle": "NONE",
+                "unit": "%"
+            },
+            "exitTriggerArray": [
+                {
+                    "variable": "STATETIME",
+                    "test": ">",
+                    "threshold": 1200,
+                    "exitTo": "$f9b3d0f85bed5626"
+                },
+                {
+                    "variable": "DO",
+                    "test": "<",
+                    "threshold": 1,
+                    "exitTo": "$cd5bb80e5ddf9ec7"
+                }
+            ]
+        },
+        {
+            "state_id": "$cd5bb80e5ddf9ec7",
+            "name": "Production Phase",
+            "STIRR": {
+                "ControlStyle": "CONSTANT",
+                "ControlParameters": {
+                    "value": 800
+                },
+                "unit": "rpm"
+            },
+            "FEEDR": {
+                "ControlStyle": "NONE",
+                "unit": "g/m"
+            },
+            "TEMP": {
+                "ControlStyle": "ON/OFF",
+                "ControlParameters": {
+                    "CV": "XV_TEMP",
+                    "ON_LIMIT": 31,
+                    "OFF_LIMIT": 29
+                },
+                "unit": "C"
+            },
+            "PH": {
+                "ControlStyle": "PID",
+                "ControlParameters": {
+                    "CV": "BASER",
+                    "SP": 4
+                },
+                "unit": ""
+            },
+            "DO": {
+                "ControlParameters": {
+                    "CV": "FEEDR",
+                    "SP": 15
+                },
+                "unit": "%"
+            },
+            "exitTriggerArray": [
+                {
+                    "variable": "STATETIME",
+                    "test": ">",
+                    "threshold": 259200,
+                    "exitTo": ""
+                }
+            ]
+        }
+    ]
+}
